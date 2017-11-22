@@ -22,6 +22,7 @@ con.connect(function(err)
 	if (err) 
 	{
 		console.log("cannot connect to db");
+		return;
 	}
 	console.log("connectin established");
 });
