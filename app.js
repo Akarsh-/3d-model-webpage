@@ -11,10 +11,10 @@ var INITIAL_VALUE = 2;
 
 
 var con = mysql.createConnection({
-	host: "localhost",
-	user: "root",
-	password: "",
-	database: "applicationdb"
+	host: "	b8f5j5ecq-mysql.services.clever-cloud.com",
+	user: "	uklr9t0l9gc9rvu6",
+	password: "yPn1jCyqFYgIYyz74ei",
+	database: "b8f5j5ecq"
 });
 
 con.connect(function(err) 
