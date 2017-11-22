@@ -12,8 +12,8 @@ var INITIAL_VALUE = 2;
 
 var con = mysql.createConnection({
 	host: "b8f5j5ecq-mysql.services.clever-cloud.com",
-	user: "Jfi0SxbJdiLATy3gI82v",
-	password: "yPn1jCyqFYgIYyz74ei",
+	user: "uklr9t0l9gc9rvu6",
+	password: "Jfi0SxbJdiLATy3gI82v",
 	database: "b8f5j5ecq"
 });
 
