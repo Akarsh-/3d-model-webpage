@@ -56,7 +56,7 @@ app.post('', function(req, res) {
 			
 			if (err) 
 			{
-				console.log("error while getting categories");
+				console.log("error while getting categories + err");
 				return;
 			}
 							
