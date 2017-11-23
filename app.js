@@ -9,11 +9,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 
 var pool  = mysql.createPool({
-	connectionLimit : 10,
-	host: "localhost",
-	user: "root",
-	password: "",
-	database: "applicationdb"
+	connectionLimit : 5,
+	host: "b8f5j5ecq-mysql.services.clever-cloud.com",
+	user: "uklr9t0l9gc9rvu6",
+	password: "Jfi0SxbJdiLATy3gI82v",
+	database: "b8f5j5ecq"
 });
 		
 
