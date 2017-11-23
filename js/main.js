@@ -1,3 +1,7 @@
+/**
+main lstCategories gets set here
+*/
+
 function MyClass(response)
 {
 	this.data = response;
@@ -7,16 +11,18 @@ function MyClass(response)
 	for(i = 0; i< lstCategories.length;i++)
 	{
 		var name = lstCategories[i].name;
-		var morerows = lstCategories[i].morerows;
+		var morerows = lstCategories[i].bMoreRows;
 		var id = lstCategories[i].id;
-		var modelLst = lstCategories[i].models;
+		var modelLst = lstCategories[i].lstModel;
 		var cat = new Categories(id, name, modelLst, morerows);
 		this.lstCat[i] = cat;
 	}
 }
 
 
-
+/**
+	model to store category name and lst of models in it
+*/
 function Categories(id, name, modelLst, morerows)
 {
 	this.id = id;
@@ -37,9 +43,12 @@ function Categories(id, name, modelLst, morerows)
 	}
 }
 
+/**
+	function to get more madels
+*/
 Categories.prototype.GetMoreModels = function()
 {
-		this.startIndex += ROW_COUNT;
+		this.startIndex += this.lstModels.length;
 		var request = new XMLHttpRequest();
 		var me = this;
 	
@@ -57,7 +66,7 @@ Categories.prototype.ModelLoaded = function (request)
         var obj = JSON.parse(request.target.responseText);
    
 		this.morerows = obj.morerows;
-		var models = obj.models;
+		var models = obj.lstModel;
 		
 		for(i = this.startIndex, j = 0; i< models.length + this.startIndex; i++, j++)
 		{
@@ -69,12 +78,16 @@ Categories.prototype.ModelLoaded = function (request)
 			this.lstModels[i] = oModel;
 		}
 		
+		//event sent to view to update
 		var cEvent = new CustomEvent('update', { detail: {id: this.id} });
 		document.dispatchEvent(cEvent);
     }
 }
 
 
+/**
+	model data structure
+*/
 function Model(name, mtl, obj, thumb)
 {
 	this.name = name;

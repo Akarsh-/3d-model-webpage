@@ -23,9 +23,10 @@ start.prototype.FileLoaded = function(request)
 	{
         var my_JSON_object = JSON.parse(request.target.responseText);
    
+		this.dialog = new Dialog(this.mainDiv);
 		var myModel = new MyClass(my_JSON_object);
 		
-		this.myView = new MyView(myModel, this.mainDiv);
+		this.myView = new MyView(myModel, this.mainDiv, this.dialog);
     }
 }
 
@@ -35,6 +36,11 @@ start.prototype.resize = function()
 	{
 		this.width = this.mainDiv.offsetWidth;
 		if(this.myView != null)
+		{
+			this.dialog.resize();
+			this.myView.setStartPos0();
 			this.myView.resize(this.width);
+			this.dialog.re
+		}
 	}
 }
