@@ -7,30 +7,13 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); 
 
-var INITIAL_VALUE = 2;
 
-var pool = mysql.createPool ({
-	connectionLimit : 5,
-	host: "b8f5j5ecq-mysql.services.clever-cloud.com",
-	user: "uklr9t0l9gc9rvu6",
-	password: "Jfi0SxbJdiLATy3gI82v",
-	database: "b8f5j5ecq"
-});
-var con = mysql.createConnection({
-	host: "b8f5j5ecq-mysql.services.clever-cloud.com",
-	user: "uklr9t0l9gc9rvu6",
-	password: "Jfi0SxbJdiLATy3gI82v",
-	database: "b8f5j5ecq"
-});
-
-con.connect(function(err) 
-{
-	if (err) 
-	{
-		console.log("cannot connect to db");
-		return;
-	}
-	console.log("connectin established");
+var pool  = mysql.createPool({
+	connectionLimit : 10,
+	host: "localhost",
+	user: "root",
+	password: "",
+	database: "applicationdb"
 });
 		
 
@@ -46,93 +29,142 @@ app.get('/main.js', function(req, res) {
 app.get('/mainView.js', function(req, res) {
     res.sendFile(path.join(__dirname + '/js/mainView.js'));
 });
-app.get('/file.json', function(req, res) {
-    res.sendFile(path.join(__dirname + '/json/file.json'));
+app.get('/dialog.js', function(req, res) {
+    res.sendFile(path.join(__dirname + '/js/dialog.js'));
 });
+app.get('/rowview.js', function(req, res) {
+    res.sendFile(path.join(__dirname + '/js/rowview.js'));
+});
+app.get('/proj.css', function(req, res) {
+    res.sendFile(path.join(__dirname + '/material/proj.css'));
+});
+app.get('/testaframe.html', function(req, res) {
+    res.sendFile(path.join(__dirname + '/aframe/testaframe.html'));
+});
+app.get('/Cabbage_01.obj', function(req, res) {
+	 res.sendFile(path.join(__dirname + '/material/Cabbage_01.obj'));
+});
+app.get('/Cabbage_01.mtl', function(req, res) {
+	 res.sendFile(path.join(__dirname + '/material/Cabbage_01.mtl'));
+});
+app.get('/touch.js', function(req, res) {
+	 res.sendFile(path.join(__dirname + '/js/touch.js'));
+});
+
 
 app.post('', function(req, res) {
     var reqId = req.body.reqId;
-	//res.setHeader('Content-Type', 'text/plain');
-    
 	
-	if(reqId == 1)
+	switch(reqId)
 	{
-		var strQuery = 'CALL uspGetCategories(2)';
-		
-		con.query(strQuery, function (err, result) {
-			
-			if (err) 
-			{
-				console.log("error while getting categories + err");
-				return;
-			}
-							
-			var lstCategory = [];
-			GetModels(lstCategory, result[0][0].ucatid, 0, result[0], res);
-						
-		});
+		case 1:
+			GetInitData(req, res);
+			break;
+		case 2:
+			GetCategoriesModel(req, res);
+			break;
 	}
-	else if(reqId == 2)
-	{
-		var catId = req.body.catId;
-		var startIndex = req.body.startIndex;
-		var nCount = req.body.count;
-		var strQuery = "CALL uspGetModels(" + catId + "," + startIndex + "," + nCount + ")";
-		
-		con.query(strQuery, function(err, models) {
-		if(err)
-		{
-			console.log("error while getting model for category" + catId);
-			return;
-		}
-		
-		var result = {};
-		result.morerows = models[0][0].morerows;
-		result.models = models[1];
-		res.send(result);
-		});
-	}
-	
 	
 });
 
-
-function GetModels(lstCategory, catid, index, result, res)
+function GetInitData(req, res)
 {
-	//at start getting minimum 6 count
-	strQuery = 'CALL uspGetModels(' + catid + ',0, 6)';
-	con.query(strQuery, function(err, models) {
+	var COL_COUNT = 5;
+	var strQuery = 'CALL uspGetInitData(5)';
+		
+	pool.getConnection(function(err, con) {
 		if(err)
 		{
-			console.log("error while getting model for category" + catid);
+			console.log("cannot connect to db");
 			return;
 		}
-		var cat = {};
-		cat.name = result[index].strcatname;
-		cat.id = result[index].ucatid;
-		cat.morerows = models[0][0].morerows;
-		cat.models = models[1];
-		lstCategory.push(cat);
-		
-		if(index == result.length - 1)
+				
+		con.query(strQuery, function (err, result) {
+		con.release();
+		var finalRes = {};
+		if (err) 
 		{
-			var finalRes = {};
-			finalRes.categories = lstCategory;
-	
+			console.log("error while getting init data");
 			res.send(finalRes);
-			
+			return;
 		}
-		else
+						
+		var lstCategory = [];
+		
+		var lstTotalCount = result[0];
+		
+		var objResult = result[1];
+		var curCatId = -1;
+		var j = 0;
+		var category;
+		
+		for(var i =0; i< objResult.length; i++)
 		{
-			index++;
-			var newCatId= result[index].ucatid;
-			GetModels(lstCategory, newCatId, index, result, res);
+			var model = {};
+			if(curCatId != objResult[i]["ucatid"])
+			{
+				if(category != null)
+				{
+					lstCategory[j] = category;
+					j++;
+				}
+				curCatId = objResult[i]["ucatid"];
+				
+				category = new Object();
+				category.name = objResult[i]["strcatname"];
+				category.id = objResult[i]["ucatid"];
+				category.bMoreRows = lstTotalCount[j]["totalmodels"] > COL_COUNT;
+				category.lstModel = [];
+			}
+			 model.name = objResult[i]["strmodelname"];
+			 model.obj = objResult[i]["strmodelobj"];
+			 model.mtl = objResult[i]["strmodelmtl"];
+			 model.thumb = objResult[i]["strmodelthumb"];
+			 category.lstModel.push(model);
+			 
+			 if(i == objResult.length - 1)
+				 lstCategory[j] = category;
 		}
+		
+		finalRes.categories = lstCategory;
+		res.send(finalRes);
+					
+		});
+	});
+}
+
+function GetCategoriesModel(req, res)
+{
+	var catId = req.body.catId;
+	var startIndex = req.body.startIndex;
+	var nCount = req.body.count;
+	var strQuery = "CALL uspGetModels(" + catId + "," + startIndex + "," + nCount + ")";
+	
+	pool.getConnection(function(err, con) {
+		if(err)
+		{
+			console.log("cannot connect to db");
+			return;
+		}
+		
+			var result = {};
+		con.query(strQuery, function(err, models) {
+			con.release();
+			if(err)
+			{
+				console.log("error while getting model for category" + catId);
+				res.send(result);
+			}
+			
+			result.bMoreRows = models[0][0].morerows;
+			result.lstModel = models[1];
+			res.send(result);
+		});
 	});
 }
 
 
 
-console.log("listening on port 3000");
+console.log("listening on port 8080");
 
 app.listen(8080);
