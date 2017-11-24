@@ -50,6 +50,9 @@ app.get('/Cabbage_01.mtl', function(req, res) {
 app.get('/touch.js', function(req, res) {
 	 res.sendFile(path.join(__dirname + '/js/touch.js'));
 });
+app.get('/helper.js', function(req, res) {
+	 res.sendFile(path.join(__dirname + '/aframe/helper.js'));
+});
 
 
 app.post('', function(req, res) {
