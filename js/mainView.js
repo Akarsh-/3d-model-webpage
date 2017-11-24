@@ -10,11 +10,17 @@ function MyView(myModel, parentDiv, dialog)
 	var lstCat = myModel.lstCat;
 	for(i = 0; i< lstCat.length; i++)
 	{
-		var div = document.createElement("div");
-		div.innerHTML = lstCat[i].name;
-		parentDiv.appendChild(div);
+		var divCatName = document.createElement("div");
+		divCatName.innerHTML = lstCat[i].name;
+		divCatName.setAttribute("class", "catName");
+		parentDiv.appendChild(divCatName);
 		var rowView = new RowView(lstCat[i], lstCat[i].lstModels, parentDiv, dialog);
 		this.lstRows[i] = rowView;
+		
+		if(i == 0)
+		{
+			divCatName.style.marginTop ="16px";
+		}
 	}
 }
 

@@ -17,6 +17,32 @@ function MyClass(response)
 		var cat = new Categories(id, name, modelLst, morerows);
 		this.lstCat[i] = cat;
 	}
+	this.startIndex = 0;
+}
+
+Categories.prototype.ModelLoaded = function (request)
+{
+	if(request.target.readyState == 4 && request.target.status == 200) 
+	{
+        var obj = JSON.parse(request.target.responseText);
+   
+		this.morerows = obj.bMoreRows;
+		var models = obj.lstModel;
+		
+		for(i = this.startIndex, j = 0; i< models.length + this.startIndex; i++, j++)
+		{
+			var name = models[j].name;
+			var mtl = models[j].mtl;
+			var obj = models[j].obj;
+			var thumb = models[j].thumb;
+			var oModel = new Model(name, mtl, obj, thumb);
+			this.lstModels[i] = oModel;
+		}
+		
+		//event sent to view to update
+		var cEvent = new CustomEvent('update', { detail: {id: this.id} });
+		document.dispatchEvent(cEvent);
+    }
 }
 
 
@@ -65,7 +91,7 @@ Categories.prototype.ModelLoaded = function (request)
 	{
         var obj = JSON.parse(request.target.responseText);
    
-		this.morerows = obj.morerows;
+		this.morerows = obj.bMoreRows;
 		var models = obj.lstModel;
 		
 		for(i = this.startIndex, j = 0; i< models.length + this.startIndex; i++, j++)

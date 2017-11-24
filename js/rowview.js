@@ -2,7 +2,7 @@
 this is view which adds one row and image model
 */
 
-var IMG_WIDTH = 200;
+var IMG_WIDTH = 165;
 function RowView(cat, lstModels, parentDiv, dialog)
 {
 	this.category = cat;
@@ -75,6 +75,7 @@ RowView.prototype.onRightButtonClick = function()
 	this.sendRequest();
 
 	this.startIndex += this.count;
+		
 	this.resize(this.nWidth);
 	this.ShowHideButtons();
 }
@@ -115,11 +116,19 @@ RowView.prototype.resize = function(totalWidth)
 	var nAvaiWidth = this.nWidth - (this.count * (this.paddingBetween));
 	this.modelWidth = Math.round(nAvaiWidth / this.count);
 	
-	var i;
+	var i = 0;
+	if(this.count + this.startIndex > this.lstModels.length && this.category.morerows == 0)
+	{
+		this.startIndex -= (this.count + this.startIndex - this.lstModels.length);
+		if(this.startIndex < 0)
+			this.startIndex = 0;
+	}
+	
 	for(i = 0 ; i< this.count && i + this.startIndex < this.lstModels.length; i++)
 	{
 		var div = this.lstDivs[i];
 		var div1;
+		var div2name;
 		if(div == null)
 		{
 			div = document.createElement("div");
@@ -129,8 +138,11 @@ RowView.prototype.resize = function(totalWidth)
 			div1 = document.createElement("div");
 			div1.setAttribute("class", "imgDiv");
 			div.appendChild(div1);
-			this.mainHoriDiv.appendChild(div);
 			
+			div2name = document.createElement("div");
+			div2name.setAttribute("class", "modelName");
+			div.appendChild(div2name);
+			this.mainHoriDiv.appendChild(div);
 			
 			div.style.marginBottom = this.paddingBetween;
 		
@@ -142,6 +154,9 @@ RowView.prototype.resize = function(totalWidth)
 		div1 = div.getElementsByClassName("imgDiv")[0];
 		div1.style.background = "url(" + this.lstModels[i + this.startIndex].thumb + ")";
 		div1.style.width = this.modelWidth + "px";
+		
+		div2name = div.getElementsByClassName("modelName")[0];
+		div2name.innerHTML = this.lstModels[i + this.startIndex].name;
 		if(i != this.count -1)
 			div.style.marginRight = this.paddingBetween;
 		else

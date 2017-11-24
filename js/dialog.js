@@ -25,6 +25,9 @@ function Dialog(parentDiv)
 	
 	this.iframe = document.createElement("iframe");
 	this.iframe.setAttribute("class", "frame");
+	this.iframe.setAttribute("name", "frame");
+	this.iframe.setAttribute("src", "/testaframe.html");
+	this.dialog.appendChild(this.iframe);
 	
 	
 	this.backgroundDiv.style.display = "none";
@@ -32,12 +35,14 @@ function Dialog(parentDiv)
 }
 
 Dialog.prototype.ShowDialog = function(model)
-{
+{	
+	var msg = {thumb:model.thumb, obj:model.obj, mtl:model.mtl};
+    this.iframe.contentWindow.postMessage(JSON.stringify(msg), '*');
+	this.scrollTop = document.body.scrollTop;
 	this.backgroundDiv.style.display = "block";
+	this.backgroundDiv.style.top = this.scrollTop + "px";
 	this.dialog.style.display = "block";
 	
-	this.dialog.appendChild(this.iframe);
-	this.iframe.setAttribute("src", "/testaframe.html");
 	
 	this.resize();
 	
@@ -48,7 +53,6 @@ Dialog.prototype.ShowDialog = function(model)
 
 Dialog.prototype.CloseDialog = function()
 {
-	this.dialog.removeChild(this.iframe);
 	this.backgroundDiv.style.display = "none";
 	this.dialog.style.display = "none";
 	enableScroll();
@@ -67,6 +71,6 @@ Dialog.prototype.resize = function()
 	var dW = this.dialog.offsetWidth;
 	var dH = this.dialog.offsetHeight;
 	
-	this.dialog.style.top = (tH - dH) / 2;
+	this.dialog.style.top = this.scrollTop + (tH - dH) / 2;
 	this.dialog.style.left = (tW - dW) / 2;
 }

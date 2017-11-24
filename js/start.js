@@ -14,6 +14,7 @@ function start()
    
    window.setInterval(function() {me.resize()}, 300);
    this.mainDiv = document.getElementById("maindiv");
+   this.mainDiv.addEventListener('update', function (e) {me.OnScroll.call(me, e);});
    this.width = this.mainDiv.offsetWidth;
 }
 
@@ -44,3 +45,19 @@ start.prototype.resize = function()
 		}
 	}
 }
+
+start.prototype.OnScroll = function(scrollPos)
+{
+	//send request to update model
+}
+
+window.addEventListener('scroll', function(e) {
+
+  var last_known_scroll_position = window.scrollY;
+  var mainDiv = document.getElementById("maindiv");
+  
+  //event sent to view to update
+	var cEvent = new CustomEvent('update', { detail: {pos: last_known_scroll_position} });
+	mainDiv.dispatchEvent(cEvent);
+  
+});
