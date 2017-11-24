@@ -87,8 +87,7 @@ function GetInitData(req, res)
 			console.log("error while getting init data");
 			res.send(finalRes);
 			return;
-		}
-		console.log(result[0][0]);				
+		}			
 		var lstCategory = [];
 		
 		var lstTotalCount = result[0];
