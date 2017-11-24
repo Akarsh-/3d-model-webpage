@@ -88,7 +88,7 @@ function GetInitData(req, res)
 			res.send(finalRes);
 			return;
 		}
-						
+		console.log(result[0][0]);				
 		var lstCategory = [];
 		
 		var lstTotalCount = result[0];
